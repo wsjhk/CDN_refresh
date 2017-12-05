@@ -57,19 +57,19 @@ class refresh(object):
         else:
             for domain in self.domains:
                 if domain:          #判断是否是空行的情况，是的话什么也不做
-                    a = refreshcdn.PurgeObjCache("cqms.cdn.gop.yy.com", domain, "File")
+                    a = refreshcdn.PurgeObjCache("你的域名", domain, "File")
                 else:
                     continue
 
         for dir in self.dirs:
             if dir:
-                b = refreshcdn.PurgeObjCache("cqms.cdn.gop.yy.com", dir, "File")
+                b = refreshcdn.PurgeObjCache("你的域名", dir, "File")
             else:
                 continue
         if a['RefreshTaskId'] == "000":
-            res = refreshcdn.SelectObjCache("cqms.cdn.gop.yy.com", b['RefreshTaskId'], "File")['Tasks']['CDNTask']
+            res = refreshcdn.SelectObjCache("你的域名", b['RefreshTaskId'], "File")['Tasks']['CDNTask']
         else:
-            res = refreshcdn.SelectObjCache("cqms.cdn.gop.yy.com", a['RefreshTaskId'], "File")['Tasks']['CDNTask']
+            res = refreshcdn.SelectObjCache("你的域名", a['RefreshTaskId'], "File")['Tasks']['CDNTask']
         for i in range(0, len(res)):
             info = cdn_info(res[i]['TaskId'], res[i]['ObjectPath'], res[i]['Process'],session.get('user_username'))
             db.session.add(info)
@@ -155,7 +155,7 @@ def select():
     if request.method == 'POST':
         danhao = request.form.get('danhao')
         if danhao and cdn_info.query.filter_by(RefreshTaskId=danhao).all():
-            res = refreshcdn.SelectObjCache("cqms.cdn.gop.yy.com", danhao, "File")['Tasks']['CDNTask']
+            res = refreshcdn.SelectObjCache("你的域名", danhao, "File")['Tasks']['CDNTask']
             for i in range(0, len(res)):
                 info = cdn_info.query.filter_by(RefreshTaskId=danhao).filter_by(url_dir=res[i]['ObjectPath']).first()
                 info.Process = res[i]['Process']

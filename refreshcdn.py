@@ -16,8 +16,8 @@ logging.basicConfig(level=logging.DEBUG, format='%(asctime)s %(filename)s[line:%
 ##global parameter should be defined
 SRC_REGION_ID = "cn-shanghai"
 DES_REGION_ID = "cn-shanghai"
-ACCESS_KEY_ID = 'LTAIVvGl9tMybPNB'
-ACCESS_KEY_SECRET = '17JEnZmMTM5H4FpzhEpu4Yttd51Xa2'
+ACCESS_KEY_ID = '你的阿里云ID'
+ACCESS_KEY_SECRET = '你的阿里云KEY'
 DISK_COLUMN_BASE = 19
 DISK_PARA_NUM = 6
 CREATE_INSTANCE_BASE = 50
