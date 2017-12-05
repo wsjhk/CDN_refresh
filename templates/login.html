@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>CDN域名资源刷新系统</title>
+    <meta name="description" content="">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.2/css/bootstrap.css">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.2/css/bootstrap-responsive.css">
+    <style type="text/css">
+        body {
+            padding-top: 60px;
+        }
+    </style>
+    <!--[if lt IE 9]>
+    <script src="//cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <div class="well container ">
+        <h2>CDN域名资源刷新系统</h2>
+        <p>&nbsp;</p>
+        <form class="form-horizontal" action="" method="post">
+            <div style='display:none'><input type='hidden' name='csrfmiddlewaretoken' value='3YhpNyQH1GThGN5HKFtTzPRW4UQRSsnG' /></div>
+            <div class="control-group required">
+                <label class="control-label" for="id_username">用户名</label>
+                <div class="controls">
+                    <input type="text" placeholder="用户名" name="username" id="id_username" />
+                </div>
+            </div>
+            <div class="control-group required">
+                <label class="control-label" for="id_password">密码</label>
+                <div class="controls">
+                    <input type="password" placeholder="密码" name="password" id="id_password" />
+                </div>
+            </div>
+            <p class="form-actions">
+                <input type="submit" value="普通登录" class="btn btn-primary">
+                <a href="/yy_cdnlogin"><input type="button" value="YY登录" class="btn btn-success"></a>
+                <a href="#"><input type="button" value="忘记密码" class="btn disabled btn-danger"></a>
+                <!-- <a href="#"><input type="button" value="注册" class="btn disabled btn-success"></a> -->
+            </p>
+        </form>
+    </div>
+    <!-- </div>-->
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <!--<script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+    <script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+    -->
+</body>
+</html>
