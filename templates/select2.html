@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>在线刷新CDN资源</title>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <link rel="stylesheet" href={{ url_for('static',filename='layui/css/layui.css') }} />
+    <link rel="stylesheet" href={{ url_for('static',filename='bootstrap/css/bootstrap.min.css') }} />
+</head>
+<body>
+<div class="well container" style="margin-top: 50px">
+    <div class="pc-center">
+        <h1 class="layui-bg-blue layui-anim layui-anim-up">&emsp;CDN域名资源刷新<span style="float: right;margin-top:10px;color: #761c19;font-size: medium">{{ user }}&emsp;<a href="/logout" style="float: right;color: #761c19">注销&emsp;</a></span></h1>
+        <ul class="nav nav-tabs layui-anim layui-anim-up">
+            <li role="presentation"><a href={{ url_for('dashboard') }}>刷新页</a></li>
+            <li role="presentation" class="active"><a href={{ url_for('select1') }}>查询页</a></li>
+        </ul>
+        <form class="layui-form" action="/select1" method="post" id="msg" style="margin-top: 20px">
+            <div class="layui-form-item layui-form-text">
+                <div class="layui-input-block layui-anim layui-anim-up">
+                    <input name="danhao" placeholder="请输入资源链接:" class="layui-input" style="width:300px;float: left">
+                    <button type="submit" class="layui-btn layui-btn-normal layui-btn-radius" style="margin-left: 100px">查 询</button>
+                    <button type="reset" class="layui-btn layui-btn-radius" style="margin-left: 100px">重 置</button>
+                </div>
+            </div>
+        </form>
+        <table class="table table-bordered table-hover layui-anim layui-anim-up">
+          <colgroup>
+            <col width="150">
+            <col width="200">
+            <col>
+          </colgroup>
+          <thead>
+            <tr>
+                <th>单号</th>
+                <th>用户</th>
+                <th>提交时间</th>
+                <th>刷新链接</th>
+                <th>刷新进度</th>
+                <th>状态</th>
+            </tr>
+          </thead>
+        {% if data == "none" %}
+            <hr>
+        {% else %}
+            <tbody>
+            {% for info in data %}
+            {% if info.status == "1" %}
+                <tr class="warning">
+            {% elif info.status == "2" %}
+                <tr class="info">
+            {% elif info.status == "3" %}
+                <tr class="success">
+            {% else %}
+                <tr class="danger">
+            {% endif %}
+                <td>{{ info.RefreshTaskId }}</td>
+                <td>{{ info.user }}</td>
+                <td>{{ info.create_time }}</td>
+                <td>{{ info.url_dir }}</td>
+                <td>{{ info.Process }}</td>
+                {% if info.status == "1" %}
+                    <td>等待刷新</td>
+                {% elif info.status == "2" %}
+                    <td>刷新中</td>
+                {% elif info.status == "3" %}
+                    <td>已刷新</td>
+                {% else %}
+                    <td>刷新失败</td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+        <nav aria-label="Page navigation" class="layui-anim layui-anim-up" style="float: right">
+            <ul class="pagination">
+                <li{% if not pagination.has_prev %} class="disabled"{% endif %}>
+                    <a href="{% if pagination.has_prev %}{{ url_for('select2',page = pagination.page - 1,danhao=data[0].url_dir) }}{% else %}#{% endif %}" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                {% for p in pagination.iter_pages() %}
+                    {% if p %}
+                        {% if p == pagination.page %}
+                            <li class="active">
+                                <a href="{{ url_for('select2', page = p,danhao=data[0].url_dir) }}">{{ p }}</a>
+                            </li>
+                        {% else %}
+                            <li>
+                                <a href="{{ url_for('select2', page = p,danhao=data[0].url_dir) }}">{{ p }}</a>
+                            </li>
+                        {% endif %}
+                    {% else %}
+                        <li class="disabled">
+                            <a href="#">…</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+                <li{% if not pagination.has_next %} class="disabled"{% endif %}>
+                    <a href="{% if pagination.has_next %}{{ url_for('select2',page = pagination.page + 1,danhao=data[0].url_dir) }}{% else %}#{% endif %}" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+</body>
+</html>
