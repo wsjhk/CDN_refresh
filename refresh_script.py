@@ -106,15 +106,16 @@ def shibai():
 
 
 if __name__ == '__main__':
-    while 1:
-        threads = []
-        t1 = threading.Thread(target=refresh)
-        t2 = threading.Thread(target=select)
-        t3 = threading.Thread(target=shibai)
-        threads.append(t1)
-        threads.append(t2)
-        threads.append(t3)
-        for t in threads:
-            t.setDaemon(True)
-            t.start()
-        time.sleep(5)
+    print("[" + datetime.now() + "]: task start.")
+    threads = []
+    t1 = threading.Thread(target=refresh)
+    t2 = threading.Thread(target=select)
+    t3 = threading.Thread(target=shibai)
+    threads.append(t1)
+    threads.append(t2)
+    threads.append(t3)
+    for t in threads:
+        t.setDaemon(True)
+        t.start()
+        time.sleep(15)
+    print("[" + datetime.now() + "]: task end.")
