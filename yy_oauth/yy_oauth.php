@@ -12,8 +12,8 @@ class yy_oauth
 	private $appid = '5855';
 	private $appkey = 'HBzcXYseDk5ZDd6ve7fiWKbCwAFahhb1';
 	private $key_file = '';
-	private $callbackURL = 'http://resource.gop.yy.com:5000/yy_cdnoauth';//登陆回调url
-	private $denyCallbackURL = 'http://resource.gop.yy.com:5000/yy_denyCallback';//退出url
+	private $callbackURL = 'http://www.test.com/yy_cdnoauth';//登陆回调url
+	private $denyCallbackURL = 'http://www.test.com/yy_denyCallback';//退出url
 
 	//生成authorizeurl
 	public function  getAuthorizeURL(){		
