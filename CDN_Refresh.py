@@ -91,7 +91,7 @@ def login():
 #YY登录进行验证，成功后，回调 yy_oauth函数进行创用户
 @app.route('/yy_cdnlogin', methods=['GET','POST'])
 def yy_cdnlogin():
-    proc = run_command('php E:\myfiles\projects\CDN_refresh\yy_oauth\login.php')
+    proc = run_command('php ./yy_oauth/login.php')
     return make_response(redirect(proc['out']))
 
 #YY登录回调的url,首次登录会创建用户
@@ -99,7 +99,7 @@ def yy_cdnlogin():
 def yy_cdnoauth():
     oauth_token = request.args.get('oauth_token')
     oauth_verifier = request.args.get('oauth_verifier')
-    proc = run_command("php E:\myfiles\projects\CDN_refresh\yy_oauth\login.php do=yy_oauth oauth_token="+oauth_token+" oauth_verifier="+oauth_verifier)
+    proc = run_command(str("php ./yy_oauth/login.php do=yy_oauth oauth_token="+oauth_token+" oauth_verifier="+oauth_verifier))
     script_response = proc['out']
     yy_user = script_response.split('-')
     username = yy_user[0]
@@ -158,19 +158,19 @@ def select1(page=1):
         finally:
             db.session.close()
     else:
-        if cdn_info_new.query.filter_by(user=session['user_username']).all():
-            try:
+        try:
+            if cdn_info_new.query.filter_by(user=session['user_username']).all():
                 pagination = cdn_info_new.query.filter_by(user=session['user_username']).order_by(cdn_info_new.create_time.desc()).paginate(page, per_page=15, error_out=False)
                 data = pagination.items
-            except Exception:
-                print "DB Error."
-                return None
-            finally:
-                db.session.close()
-            return render_template('select1.html',data = data,user = session['user_username'],pagination=pagination)
-        else:
-            return render_template('select1.html', data="none", user=session['user_username'], pagination="none")
-
+                return render_template('select1.html',data = data,user = session['user_username'],pagination=pagination)
+            else:
+                return render_template('select1.html', data="none", user=session['user_username'], pagination="none")
+        except Exception:
+            print "DB Error."
+            return None
+        finally:
+            db.session.close()
+            
 # 主功能查询视图函数,处理用户查询某个url的信息
 @app.route('/select2/<int:page>/')
 @login_required
