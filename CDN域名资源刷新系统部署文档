@@ -1,0 +1,53 @@
+1.部署主机和目录
+	#your_ip
+	#/data/CDN_resource/CDN_refresh
+
+2.安装工程依赖的模块：
+	#pip install -r requirements.txt
+
+3.创建mysql数据库CDN_refresh：
+	#mysql://cdn_refresh:cdn_refresh_123@localhost:3306/cdn_refresh
+	#create database CDN_refresh;
+
+4.配置uwsgi启动文件：
+#cat /data/CDN_resource/CDN_refresh/uwsgi.ini
+[uwsgi]
+
+socket = 127.0.0.1:5001
+file = /data/CDN_resource/CDN_refresh/CDN_Refresh.py
+callable = app
+
+uid = www-data
+gid = www-data
+
+processes = 10
+threads = 5
+logto = /data/CDN_resource/CDN_refresh/uwsgi.log
+pidfile = /data/CDN_resource/CDN_refresh/uwsgi.pid
+
+5.启动uwsgi(写成脚本启停uwsgi)
+#uwsgi --ini /data/CDN_resource/CDN_refresh/uwsgi.ini &
+
+6.添加nginx的配置指向uwsgi进程，nginx配置文件路径/data/app/nginx/conf/sites/：
+server {
+	listen       80;
+	server_name  cdnrefresh.sysop.gop.yy.com;
+	charset utf-8;
+	access_log /data/log/nginx/$host.access.log;
+	location / {
+		uwsgi_pass  127.0.0.1:5001;
+		include     uwsgi_params; 
+		proxy_set_header Host $host;
+		roxy_set_header X-Real-IP $remote_addr;
+		proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+	}
+}
+
+7.平滑启动nginx：
+	#/etc/init.d/nginx reload
+
+8.后台cron五分钟执行一次的定时任务脚本，在目录下设置/etc/cron.d/root_crontab
+#*/5 * * * * root /usr/bin/python /data/CDN_resource/CDN_refresh/refresh_script.py >> /data/CDN_resource/CDN_refresh/refresh_scripte.log 2>&1
+
+9.访问：
+http://www.domain.com/
