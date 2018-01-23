@@ -104,6 +104,35 @@ def QueryCdn(item_id, token):
     else:
         return False
 
+#二次开发api接口调用的刷新函数
+def RefreshCdnAPI(url, type, token):
+    sy = huanju_cdn_api()
+    sy.set_endPoint("/api/RefreshCache")
+    #刷新目录的话，后缀需要是/结尾
+    #type:flush/prefetch  刷新/预取
+    params = {
+            "url":url,
+            "type":type,
+            "access_token":token
+        }
+    sy.set_body(params)
+    sy.set_method("POST")
+    result = sy.do_request()
+    return result
+
+#二次开发api接口调用的查询函数
+def QueryCdnAPI(item_id, token):
+    sy = huanju_cdn_api()
+    sy.set_endPoint("/api/GetTaskStatus")
+    params = {
+        "item_id": item_id,
+        "access_token": token
+    }
+    sy.set_body(params)
+    sy.set_method("POST")
+    result = sy.do_request()
+    return result
+
 # if __name__ == '__main__':
 #     token = GetApiToken()
 #     url = ["http://www.abc.com/test.json","dd.json"]
