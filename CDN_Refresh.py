@@ -1,9 +1,12 @@
 # -*- coding: utf8 -*-
 
-from flask import Flask,render_template,request,redirect,jsonify,session,url_for,make_response
+from flask import Flask,render_template,request,redirect,jsonify,session,url_for,make_response,abort
 import subprocess,os
 from model import auth_user,cdn_info_new,db
 from functools import wraps
+import huanju_aliyun_cdn_api
+
+token = huanju_aliyun_cdn_api.GetApiToken()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(24)
@@ -195,6 +198,33 @@ def logout():
     session.pop('user_username')
     return redirect(url_for('login'))
 
+from flask.ext.httpauth import HTTPBasicAuth
+auth = HTTPBasicAuth()
+
+@auth.get_password
+def get_password(username):
+    if username == 'huanjucdn':
+        return 'huanjucdn@yy'
+    return None
+
+@auth.error_handler
+def unauthorized():
+    return make_response(jsonify({'error': 'Unauthorized access'}), 403)
+
+@app.route('/cdnflush/api/v1.0/resources/<string:item_id>', methods=['GET'])
+@auth.login_required
+def get_resource(item_id):
+    result = huanju_aliyun_cdn_api.QueryCdnAPI(item_id, token)
+    return jsonify({'resource': result})
+
+@app.route('/cdnflush/api/v1.0/resources', methods=['POST'])
+@auth.login_required
+def flush_resource():
+    if not request.json or not 'url' in request.json:
+        abort(400)
+    url = request.json['url']
+    item_id = huanju_aliyun_cdn_api.RefreshCdnAPI(url, "flush", token)
+    return jsonify({'resource': item_id}), 201
 
 if __name__ == '__main__':
     app.run(host="0.0.0.0", port=5000)
