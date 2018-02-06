@@ -5,8 +5,8 @@ import subprocess,os
 from model import auth_user,cdn_info_new,db
 from functools import wraps
 import huanju_aliyun_cdn_api
-
-token = huanju_aliyun_cdn_api.GetApiToken()
+from flask.ext.httpauth import HTTPBasicAuth
+auth = HTTPBasicAuth()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.urandom(24)
@@ -198,9 +198,6 @@ def logout():
     session.pop('user_username')
     return redirect(url_for('login'))
 
-from flask.ext.httpauth import HTTPBasicAuth
-auth = HTTPBasicAuth()
-
 @auth.get_password
 def get_password(username):
     if username == 'huanjucdn':
@@ -214,6 +211,7 @@ def unauthorized():
 @app.route('/cdnflush/api/v1.0/resources/<string:item_id>', methods=['GET'])
 @auth.login_required
 def get_resource(item_id):
+    token = huanju_aliyun_cdn_api.GetApiToken()
     result = huanju_aliyun_cdn_api.QueryCdnAPI(item_id, token)
     return jsonify({'resource': result})
 
@@ -223,6 +221,7 @@ def flush_resource():
     if not request.json or not 'url' in request.json:
         abort(400)
     url = request.json['url']
+    token = huanju_aliyun_cdn_api.GetApiToken()
     item_id = huanju_aliyun_cdn_api.RefreshCdnAPI(url, "flush", token)
     return jsonify({'resource': item_id}), 201
 
