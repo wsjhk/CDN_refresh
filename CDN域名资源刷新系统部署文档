@@ -64,4 +64,7 @@ POST        http://www.domain.com/cdnflush/api/v1.0/resources                   
 1.根据item_id查询资源刷新的进度和状态(说明：item_id参数是string类型,可以使用多个，多个之间用","分隔)：
 #curl -u username:passwd -i http://www.domain.com/cdnflush/api/v1.0/resources/1898548783,1898548784,1898548790
 2.使用json格式post资源url刷新。(说明：json格式参数中url这个key的值是一个列表类型[list])：
-curl -u username:passwd -i -H "Content-Type: application/json" -X POST -d '{"url":["http://www.domain.com/do_not_delete/noc.gif","http://www.domain.com/do_not_delete/yy.json","http://www.domain.com/do_not_delete/","http://www.domain.com/do_not_delete/yy.json"]}' http://www.domain.com/cdnflush/api/v1.0/resources
+linux：
+#curl -u username:passwd -i -H "Content-Type: application/json" -X POST -d '{"url":["http://www.domain.com/do_not_delete/noc.gif","http://www.domain.com/do_not_delete/yy.json","http://www.domain.com/do_not_delete/","http://www.domain.com/do_not_delete/yy.json"]}' http://www.domain.com/cdnflush/api/v1.0/resources
+windows：
+#curl -u username:passwd -i -H "Content-Type: application/json" -X POST -d "{\"url\":[\"http://www.domain.com/do_not_delete/noc.gif\",\"http://www.domain.com/do_not_delete/yy.json\",\"http://www.domain.com/do_not_delete/\",\"http://www.domain.com/do_not_delete/yy.json\"]}" http://www.domain.com/cdnflush/api/v1.0/resources
