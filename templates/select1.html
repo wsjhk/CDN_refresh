@@ -3,6 +3,7 @@
 <head>
     <title>在线刷新CDN资源</title>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta name="author" content="user">
     <link rel="stylesheet" href={{ url_for('static',filename='layui/css/layui.css') }} />
     <link rel="stylesheet" href={{ url_for('static',filename='bootstrap/css/bootstrap.min.css') }} />
 </head>
@@ -56,7 +57,7 @@
                 <td>{{ info.RefreshTaskId }}</td>
                 <td>{{ info.user }}</td>
                 <td>{{ info.create_time }}</td>
-                <td>{{ info.url_dir }}</td>
+                <td>{{ info.resources }}</td>
                 <td>{{ info.Process }}</td>
                 {% if info.status == "1" %}
                     <td>等待刷新</td>
