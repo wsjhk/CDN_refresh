@@ -3,6 +3,7 @@
 <head>
     <title>在线刷新CDN资源</title>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta name="author" content="user">
     <link rel="stylesheet" href={{ url_for('static',filename='layui/css/layui.css') }} />
     <link rel="stylesheet" href={{ url_for('static',filename='bootstrap/css/bootstrap.min.css') }} />
 </head>
@@ -56,7 +57,7 @@
                 <td>{{ info.RefreshTaskId }}</td>
                 <td>{{ info.user }}</td>
                 <td>{{ info.create_time }}</td>
-                <td>{{ info.url_dir }}</td>
+                <td>{{ info.resources }}</td>
                 <td>{{ info.Process }}</td>
                 {% if info.status == "1" %}
                     <td>等待刷新</td>
@@ -74,7 +75,7 @@
         <nav aria-label="Page navigation" class="layui-anim layui-anim-up" style="float: right">
             <ul class="pagination">
                 <li{% if not pagination.has_prev %} class="disabled"{% endif %}>
-                    <a href="{% if pagination.has_prev %}{{ url_for('select2',page = pagination.page - 1,danhao=data[0].url_dir) }}{% else %}#{% endif %}" aria-label="Previous">
+                    <a href="{% if pagination.has_prev %}{{ url_for('select2',page = pagination.page - 1,danhao=data[0].resources) }}{% else %}#{% endif %}" aria-label="Previous">
                         <span aria-hidden="true">&laquo;</span>
                     </a>
                 </li>
@@ -82,11 +83,11 @@
                     {% if p %}
                         {% if p == pagination.page %}
                             <li class="active">
-                                <a href="{{ url_for('select2', page = p,danhao=data[0].url_dir) }}">{{ p }}</a>
+                                <a href="{{ url_for('select2', page = p,danhao=data[0].resources) }}">{{ p }}</a>
                             </li>
                         {% else %}
                             <li>
-                                <a href="{{ url_for('select2', page = p,danhao=data[0].url_dir) }}">{{ p }}</a>
+                                <a href="{{ url_for('select2', page = p,danhao=data[0].resources) }}">{{ p }}</a>
                             </li>
                         {% endif %}
                     {% else %}
@@ -96,7 +97,7 @@
                     {% endif %}
                 {% endfor %}
                 <li{% if not pagination.has_next %} class="disabled"{% endif %}>
-                    <a href="{% if pagination.has_next %}{{ url_for('select2',page = pagination.page + 1,danhao=data[0].url_dir) }}{% else %}#{% endif %}" aria-label="Next">
+                    <a href="{% if pagination.has_next %}{{ url_for('select2',page = pagination.page + 1,danhao=data[0].resources) }}{% else %}#{% endif %}" aria-label="Next">
                         <span aria-hidden="true">&raquo;</span>
                     </a>
                 </li>
