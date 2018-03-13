@@ -39,7 +39,7 @@ def refresh(type):
 #将数据库中状态为2的刷新中的资源的item_id取出用于查询在阿里云上的刷新进度，查询之后更新进度的，如果进度100%则更新状态为3已刷新。
 def select():
     try:
-        info1 = cdn_info_new.query.filter_by(status="2").all()
+        info1 = cdn_info_new.query.filter(cdn_info_new.RefreshTaskId != "0").filter_by(status="2").all()
     except Exception:
         print "DB Error."
         return None
