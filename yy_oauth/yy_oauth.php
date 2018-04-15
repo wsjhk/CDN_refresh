@@ -9,8 +9,8 @@ define("WRITECOOKIEURL", "WRITECOOKIEURL");
 
 class yy_oauth
 {
-	private $appid = '5855';
-	private $appkey = 'HBzcXYseDk5ZDd6ve7fiWKbCwAFahhb1';
+	private $appid = 'xxx';
+	private $appkey = 'xxx';
 	private $key_file = '';
 	private $callbackURL = 'http://www.test.com/yy_cdnoauth';//登陆回调url
 	private $denyCallbackURL = 'http://www.test.com/yy_denyCallback';//退出url
