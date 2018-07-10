@@ -4,7 +4,7 @@ from flask import Flask,render_template,request,redirect,jsonify,session,url_for
 import subprocess,os
 from model import auth_user,cdn_info_new,db
 from functools import wraps
-import huanju_aliyun_cdn_api
+import huanju_aliyun_cdn_api, haunju_jd_cdn_api
 from flask.ext.httpauth import HTTPBasicAuth
 auth = HTTPBasicAuth()
 
@@ -40,7 +40,7 @@ class refresh(object):
         else:
             for i in resource_list:
                 try:
-                    info = cdn_info_new(0,i,type,"0%",session.get('user_username'),"1")
+                    info = cdn_info_new("0",i,type,"0%",session.get('user_username'),"1")
                     db.session.add(info)
                     db.session.commit()
                 except Exception:
@@ -219,9 +219,22 @@ def unauthorized():
 @app.route('/cdnflush/api/v1.0/resources/<string:item_id>', methods=['GET'])
 @auth.login_required
 def get_resource(item_id):
-    token = huanju_aliyun_cdn_api.GetApiToken()
-    result = huanju_aliyun_cdn_api.QueryCdnAPI(item_id, token)
-    return jsonify({'resource': result})
+    try:
+        a = item_id.split(',')[1]
+        token = huanju_aliyun_cdn_api.GetApiToken()
+        result = huanju_aliyun_cdn_api.QueryCdnAPI(item_id, token)
+        return jsonify({'resource': result})
+    except Exception:
+        if len(item_id) < 30:
+            token = huanju_aliyun_cdn_api.GetApiToken()
+            result = huanju_aliyun_cdn_api.QueryCdnAPI(item_id, token)
+            return jsonify({'resource': result})
+        else:
+            result = huanju_jd_cdn_api.jdQueryCdn(item_id)
+            if result["data"]["msg"] == u"已完成":
+                return jsonify({'resource': result,'status': "100%"})
+            else:
+                return jsonify({'resource': result,'status': "0%"})
 
 @app.route('/cdnflush/api/v1.0/resources', methods=['POST'])
 @auth.login_required
@@ -229,9 +242,20 @@ def flush_resource():
     if not request.json or not 'url' in request.json:
         abort(400)
     url = request.json['url']
-    token = huanju_aliyun_cdn_api.GetApiToken()
-    item_id = huanju_aliyun_cdn_api.RefreshCdnAPI(url, "flush", token)
-    return jsonify({'resource': item_id}), 201
+    cdn_p = huanju_jd_cdn_api.domain_dns_resolver(url[0])
+    if  cdn_p == "aliyun":
+        token = huanju_aliyun_cdn_api.GetApiToken()
+        item_id = huanju_aliyun_cdn_api.RefreshCdnAPI(url, "flush", token)
+        return jsonify({'resource': item_id}), 201
+    elif cdn_p == "jd":
+        item_id = huanju_jd_cdn_api.jdRefreshCdn(url)
+        return jsonify({'resource': "Refresh OK.", 'item_id': item_id}), 201
+    elif cdn_p == "qq":
+        return jsonify({'resource': "Tencent CDN api is developing..."}), 201
+    elif cdn_p == "other":
+        return jsonify({'resource': "Only to refresh CDN for Aliyun,JDcloud and Tencent."}), 201
+    else:
+        return jsonify({'resource': "Your domain is not support CDN,Please to check!"}), 201
 
 if __name__ == '__main__':
     # from werkzeug.contrib.fixers import ProxyFix
