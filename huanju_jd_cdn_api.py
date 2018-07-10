@@ -30,7 +30,7 @@ def get_signature():
     import time
     t = time.time()
     time = datetime.fromtimestamp(t).strftime('%Y%m%d')
-    str = time + 'YY_cdn6551e783c3b33a1f696356eb2b1b1117'
+    str = time + 'xxx6551e783c3b33a1f696356eb2b1b1117'
     hl = hashlib.md5()
     hl.update(str.encode(encoding='utf-8'))
     signature = hl.hexdigest()
@@ -40,7 +40,7 @@ def jdRefreshCdn(url_list):
     refreshDoamins = "http://opencdn.jcloud.com/api/refresh"
 
     parameters = {
-        "username": "YY_cdn",
+        "username": "xxx",
         "signature": get_signature(),
         "type": "file",
         "instances": url_list
@@ -62,11 +62,11 @@ def jdQueryCdn(taskid):
     return response
 
 
-# url = ["http://mr.5153.com/do_not_delete/noc.gif","http://mr.5153.com/do_not_delete/noc1.gif"]
+# url = ["http://xxx.xxx.com/xxx/noc.gif","http://xxx.xxx.com/xxx/noc1.gif"]
 # jdRefreshCdn(url)
 
-# b = "32569608-42ca-4ec4-a36e-e575db529281"
+# b = "task_id"
 # print jdQueryCdn(b)
 
-# print domain_dns_resolver(url="http://wan.yy.com/do_not_delete/")
+# print domain_dns_resolver(url="http://xxx.xxx.com/xxx/")
 
