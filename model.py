@@ -52,7 +52,7 @@ class auth_user(db.Model):
 class cdn_info_new(db.Model):
     __tablename__ = 'cdn_info_new'
     id = db.Column(db.Integer,primary_key=True,autoincrement=True)
-    RefreshTaskId = db.Column(db.Integer,nullable=False)
+    RefreshTaskId = db.Column(db.String(50),nullable=False)
     resources = db.Column(db.String(255),nullable=False)
     type = db.Column(db.Enum("url","dir"), default="url")
     create_time = db.Column(db.DateTime,default=datetime.now,nullable=False)
