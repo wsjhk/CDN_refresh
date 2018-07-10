@@ -30,7 +30,7 @@ def get_signature():
     import time
     t = time.time()
     time = datetime.fromtimestamp(t).strftime('%Y%m%d')
-    str = time + 'xxx6551e783c3b33a1f696356eb2b1b1117'
+    str = time + 'xxxxxx'
     hl = hashlib.md5()
     hl.update(str.encode(encoding='utf-8'))
     signature = hl.hexdigest()
