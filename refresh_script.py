@@ -1,4 +1,6 @@
-import huanju_aliyun_cdn_api
+# -*- coding: utf8 -*-
+
+import huanju_aliyun_cdn_api, huanju_jd_cdn_api
 from model import cdn_info_new,db
 import time
 from multiprocessing import Process
@@ -23,17 +25,29 @@ def refresh_url(type):
         if info:
             for i in info:
                 url = [i.resources]
-                item_id = huanju_aliyun_cdn_api.RefreshCdn(url, "flush", token)
-                try:
-                    update = cdn_info_new.query.filter_by(id=i.id).first()
-                    update.status = "2"
-                    update.RefreshTaskId = item_id
-                    db.session.commit()
-                except Exception:
-                    print "DB Error."
-                    return None
-                finally:
-                    db.session.close()
+                cdn_p = huanju_jd_cdn_api.domain_dns_resolver(i.resources)
+                if cdn_p == "aliyun":
+                    item_id = huanju_aliyun_cdn_api.RefreshCdn(url, "flush", token)
+                elif cdn_p == "jd":
+                    item_id = huanju_jd_cdn_api.jdRefreshCdn(url)
+                elif cdn_p == "qq":
+                    item_id = "none"
+                else:
+                    item_id = "none"
+
+                if item_id == "none":
+                    pass
+                else:
+                    try:
+                        update = cdn_info_new.query.filter_by(id=i.id).first()
+                        update.status = "2"
+                        update.RefreshTaskId = item_id
+                        db.session.commit()
+                    except Exception:
+                        print "DB Error."
+                        return None
+                    finally:
+                        db.session.close()
         else:
             pass
 
@@ -52,17 +66,29 @@ def refresh_dir(type):
         if info0:
             for i in info0:
                 url = [i.resources]
-                item_id = huanju_aliyun_cdn_api.RefreshCdn(url, "flush", token)
-                try:
-                    update = cdn_info_new.query.filter_by(id=i.id).first()
-                    update.status = "2"
-                    update.RefreshTaskId = item_id
-                    db.session.commit()
-                except Exception:
-                    print "DB Error."
-                    return None
-                finally:
-                    db.session.close()
+                cdn_p = huanju_jd_cdn_api.domain_dns_resolver(i.resources)
+                if cdn_p == "aliyun":
+                    item_id = huanju_aliyun_cdn_api.RefreshCdn(url, "flush", token)
+                elif cdn_p == "jd":
+                    item_id = huanju_jd_cdn_api.jdRefreshCdn(url)
+                elif cdn_p == "qq":
+                    item_id = "none"
+                else:
+                    item_id = "none"
+
+                if item_id == "none":
+                    pass
+                else:
+                    try:
+                        update = cdn_info_new.query.filter_by(id=i.id).first()
+                        update.status = "2"
+                        update.RefreshTaskId = item_id
+                        db.session.commit()
+                    except Exception:
+                        print "DB Error."
+                        return None
+                    finally:
+                        db.session.close()
         else:
             pass
 
@@ -74,7 +100,7 @@ def select():
         token = huanju_aliyun_cdn_api.GetApiToken()
         try:
             info1 = cdn_info_new.query.filter(cdn_info_new.RefreshTaskId != "0").filter_by(status="2").all()
-            print info1
+            # print info1
         except Exception:
             print "DB Error."
             return None
@@ -82,21 +108,37 @@ def select():
             db.session.close()
         if info1:
             for i in info1:
-                item_id = str(i.RefreshTaskId)
-                res = huanju_aliyun_cdn_api.QueryCdn(item_id, token)
-                try:
-                    update = cdn_info_new.query.filter_by(id=i.id).first()
-                    update.Process = res[i.resources]['rate']
-                    if res[i.resources]['rate'] == "100%":
-                        update.status = "3"
-                    else:
-                        update.status = "2"
-                    db.session.commit()
-                except Exception:
-                    print "DB Error."
-                    return None
-                finally:
-                    db.session.close()
+                item_id = i.RefreshTaskId
+                if len(item_id) < 30:
+                    res = huanju_aliyun_cdn_api.QueryCdn(item_id, token)
+                    try:
+                        update = cdn_info_new.query.filter_by(id=i.id).first()
+                        update.Process = res[i.resources]['rate']
+                        if res[i.resources]['rate'] == "100%" or res[i.resources]['rate'] == "已完成":
+                            update.status = "3"
+                        else:
+                            update.status = "2"
+                        db.session.commit()
+                    except Exception:
+                        print "DB Error."
+                        return None
+                    finally:
+                        db.session.close()
+                else:
+                    res = huanju_jd_cdn_api.jdQueryCdn(item_id)["data"]["msg"]
+                    try:
+                        update = cdn_info_new.query.filter_by(id=i.id).first()
+                        update.Process = res
+                        if res == u"已完成":
+                            update.status = "3"
+                        else:
+                            update.status = "2"
+                        db.session.commit()
+                    except Exception:
+                        print "DB Error."
+                        return None
+                    finally:
+                        db.session.close()
         else:
             pass
 
@@ -135,3 +177,4 @@ if __name__ == '__main__':
     ps.append(p4)
     for p in ps:
         p.start()
+        
