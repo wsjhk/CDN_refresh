@@ -8,7 +8,6 @@ from datetime import datetime
 
 # db.create_all()
 
-
 #将数据库中记录状态为1的等待刷新的资源提交到阿里云上刷新，提交之后修改状态为2刷新中
 def refresh_url(type):
     while True:
@@ -29,9 +28,9 @@ def refresh_url(type):
                 if cdn_p == "aliyun":
                     item_id = huanju_aliyun_cdn_api.RefreshCdn(url, "flush", token)
                 elif cdn_p == "jd":
-                    item_id = huanju_jd_cdn_api.jdRefreshCdn(url)
+                    item_id = huanju_jd_cdn_api.jdRefreshCdn("file", url)
                 elif cdn_p == "qq":
-                    item_id = "none"
+                    item_id = huanju_jd_cdn_api.qcloudRefreshCdn("url", url)
                 else:
                     item_id = "none"
 
@@ -70,9 +69,9 @@ def refresh_dir(type):
                 if cdn_p == "aliyun":
                     item_id = huanju_aliyun_cdn_api.RefreshCdn(url, "flush", token)
                 elif cdn_p == "jd":
-                    item_id = huanju_jd_cdn_api.jdRefreshCdn(url)
+                    item_id = huanju_jd_cdn_api.jdRefreshCdn("dir", url)
                 elif cdn_p == "qq":
-                    item_id = "none"
+                    item_id = huanju_jd_cdn_api.qcloudRefreshCdn("dir", url)
                 else:
                     item_id = "none"
 
@@ -100,7 +99,6 @@ def select():
         token = huanju_aliyun_cdn_api.GetApiToken()
         try:
             info1 = cdn_info_new.query.filter(cdn_info_new.RefreshTaskId != "0").filter_by(status="2").all()
-            # print info1
         except Exception:
             print "DB Error."
             return None
@@ -109,7 +107,7 @@ def select():
         if info1:
             for i in info1:
                 item_id = i.RefreshTaskId
-                if len(item_id) < 30:
+                if len(item_id) < 16:
                     res = huanju_aliyun_cdn_api.QueryCdn(item_id, token)
                     try:
                         update = cdn_info_new.query.filter_by(id=i.id).first()
@@ -120,7 +118,22 @@ def select():
                             update.status = "2"
                         db.session.commit()
                     except Exception:
-                        print "DB Error."
+                        print "DB Error--ali."
+                        return None
+                    finally:
+                        db.session.close()
+                elif len(item_id) > 16 and len(item_id) < 25:
+                    res = huanju_jd_cdn_api.qcloudQueryCdn(item_id)
+                    try:
+                        update = cdn_info_new.query.filter_by(id=i.id).first()
+                        update.Process = res
+                        if res == "100%":
+                            update.status = "3"
+                        else:
+                            update.status = "2"
+                        db.session.commit()
+                    except Exception:
+                        print "DB Error--qq."
                         return None
                     finally:
                         db.session.close()
@@ -135,7 +148,7 @@ def select():
                             update.status = "2"
                         db.session.commit()
                     except Exception:
-                        print "DB Error."
+                        print "DB Error--jd."
                         return None
                     finally:
                         db.session.close()
