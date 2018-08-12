@@ -225,10 +225,16 @@ def get_resource(item_id):
         result = huanju_aliyun_cdn_api.QueryCdnAPI(item_id, token)
         return jsonify({'resource': result})
     except Exception:
-        if len(item_id) < 30:
+        if len(item_id) < 16:
             token = huanju_aliyun_cdn_api.GetApiToken()
             result = huanju_aliyun_cdn_api.QueryCdnAPI(item_id, token)
             return jsonify({'resource': result})
+        elif len(item_id) > 16 and len(item_id) < 25:
+            result = huanju_jd_cdn_api.qcloudQueryCdn(item_id)
+            if result == "100%":
+                return jsonify({'resource': item_id, 'status': result})
+            else:
+                return jsonify({'resource': item_id, 'status': result})
         else:
             result = huanju_jd_cdn_api.jdQueryCdn(item_id)
             if result["data"]["msg"] == u"已完成":
@@ -248,10 +254,11 @@ def flush_resource():
         item_id = huanju_aliyun_cdn_api.RefreshCdnAPI(url, "flush", token)
         return jsonify({'resource': item_id}), 201
     elif cdn_p == "jd":
-        item_id = huanju_jd_cdn_api.jdRefreshCdn(url)
-        return jsonify({'resource': "Refresh OK.", 'item_id': item_id}), 201
+        item_id = huanju_jd_cdn_api.jdRefreshCdn("file", url)
+        return jsonify({'resource': "Refresh committed.", 'item_id': item_id}), 201
     elif cdn_p == "qq":
-        return jsonify({'resource': "Tencent CDN api is developing..."}), 201
+        item_id = huanju_jd_cdn_api.qcloudRefreshCdn("url", url)
+        return jsonify({'resource': "Refresh committed.", 'item_id': item_id}), 201
     elif cdn_p == "other":
         return jsonify({'resource': "Only to refresh CDN for Aliyun,JDcloud and Tencent."}), 201
     else:
