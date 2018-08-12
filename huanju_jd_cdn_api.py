@@ -3,6 +3,18 @@
 import hashlib, json, requests, re
 from datetime import datetime
 from dns import resolver
+import subprocess
+
+def run_command(cmd):
+    if type(cmd) == str:
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
+    else:
+        p = subprocess.Popen(cmd, stdout=subprocess.PIPE)
+
+    output, err = p.communicate()
+    p_status = p.wait()
+    result = {"out": output, "err": err, "exit_code": p_status}
+    return result
 
 def domain_dns_resolver(url):
     host = re.match(r'(.*)://(.*?)/(.*)', url).group(2)
@@ -61,6 +73,30 @@ def jdQueryCdn(taskid):
     response = json.loads(requests.post(queryDoamins, data=json.dumps(parameters), headers=headers).content)
     return response
 
+def qcloudRefreshCdn(type, url_list):
+    if type == 'url':
+        action = "RefreshCdnUrl"
+        leixing = 'urls'
+    else:
+        leixing = 'dirs'
+        action = "RefreshCdnDir"
+    res = ""
+    for i in url_list:
+        res += "--%s" %leixing + " %s " %i
+    proc = run_command(str("python huanju_qclouds_cdn_api.py %s -u username -p password \
+                        %s" % (action, res)))
+    if proc['out'].strip()[0:5] == 'Error':
+        item_id = "error"
+    else:
+        item_id = proc['out'].strip()[28:-2]
+    return item_id
+
+def qcloudQueryCdn(taskid):
+    time = datetime.now().strftime('%Y-%M-%d')
+    proc = run_command(str("python huanju_qclouds_cdn_api.py GetCdnRefreshLog -u username -p password \
+                --taskId %s --startDate %s --endDate %s" %(taskid, time, time)))
+    process = re.match(r'(.*)progress\': (.*), u\'project(.*)', proc['out']).group(2)+"%"
+    return process
 
 # url = ["http://xxx.xxx.com/xxx/noc.gif","http://xxx.xxx.com/xxx/noc1.gif"]
 # jdRefreshCdn(url)
@@ -70,3 +106,8 @@ def jdQueryCdn(taskid):
 
 # print domain_dns_resolver(url="http://xxx.xxx.com/xxx/")
 
+# url = ['http://xx.xx.com/do_not_delete/']
+# id = qcloudRefreshCdn("url", url)
+# print id
+# res = qcloudQueryCdn("xx")
+# print res
