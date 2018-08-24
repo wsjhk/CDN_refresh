@@ -257,8 +257,20 @@ def flush_resource():
         item_id = huanju_jd_cdn_api.jdRefreshCdn("file", url)
         return jsonify({'resource': "Refresh committed.", 'item_id': item_id}), 201
     elif cdn_p == "qq":
-        item_id = huanju_jd_cdn_api.qcloudRefreshCdn("url", url)
-        return jsonify({'resource': "Refresh committed.", 'item_id': item_id}), 201
+        #item_id = huanju_jd_cdn_api.qcloudRefreshCdn("url", url)
+        #return jsonify({'resource': "Refresh committed.", 'item_id': item_id}), 201
+        i = 0
+            urls = []
+            dirs = []
+            while i < len(url):
+                if url[i][-1:] == "/":
+                    dirs.append(url[i])
+                else:
+                    urls.append(url[i])
+                i += 1
+            item_id1 = huanju_jd_cdn_api.qcloudRefreshCdn("url", urls)
+            item_id2 = huanju_jd_cdn_api.qcloudRefreshCdn("dir", dirs)
+            return jsonify({'resource': "Refresh committed.", 'item_id': item_id1 +","+ item_id2}), 201
     elif cdn_p == "other":
         return jsonify({'resource': "Only to refresh CDN for Aliyun,JDcloud and Tencent."}), 201
     else:
